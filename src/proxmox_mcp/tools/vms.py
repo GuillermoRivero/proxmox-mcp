@@ -119,6 +119,15 @@ def get_tools() -> list[Tool]:
                     "sockets": {"type": "integer", "description": "Number of CPU sockets", "default": 1},
                     "ostype": {"type": "string", "description": "OS type (l26, win10, etc.)"},
                     "iso": {"type": "string", "description": "ISO image path (e.g., local:iso/ubuntu.iso)"},
+                    "bios": {
+                        "type": "string",
+                        "enum": ["seabios", "ovmf"],
+                        "description": "Firmware: seabios for legacy BIOS, ovmf for UEFI",
+                    },
+                    "efidisk0": {
+                        "type": "string",
+                        "description": "EFI variables disk (e.g., local-lvm:0,efitype=4m,pre-enrolled-keys=0)",
+                    },
                     "scsi0": {"type": "string", "description": "SCSI disk config"},
                     "net0": {"type": "string", "description": "Network config (e.g., virtio,bridge=vmbr0)"},
                 },
@@ -157,13 +166,22 @@ def get_tools() -> list[Tool]:
         ),
         Tool(
             name="pve_vm_config_update",
-            annotations=_annotations.IDEMPOTENT_WRITE,
-            description="Update VM configuration including cloud-init settings",
+            annotations=_annotations.WRITE,
+            description="Update VM configuration including firmware and cloud-init settings",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "node": {"type": "string", "description": "Node name"},
                     "vmid": {"type": "integer", "description": "VM ID"},
+                    "bios": {
+                        "type": "string",
+                        "enum": ["seabios", "ovmf"],
+                        "description": "Firmware: seabios for legacy BIOS, ovmf for UEFI",
+                    },
+                    "efidisk0": {
+                        "type": "string",
+                        "description": "EFI variables disk (e.g., local-lvm:0,efitype=4m,pre-enrolled-keys=0)",
+                    },
                     "ciuser": {"type": "string", "description": "Cloud-init: username"},
                     "cipassword": {"type": "string", "description": "Cloud-init: password"},
                     "ipconfig0": {"type": "string", "description": "Cloud-init: IP config (e.g., ip=dhcp or ip=10.0.0.5/24,gw=10.0.0.1)"},
